@@ -8,3 +8,7 @@ export function middleware(request: NextRequest) {
     }
     return NextResponse.next() // requestを次の処理に進める
 }
+
+export const config = {
+    matcher: ['/blog/:path*']
+}
