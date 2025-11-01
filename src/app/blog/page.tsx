@@ -7,6 +7,7 @@ const articles = [
 // wait 3 seconds
 async function fetchArticles() {
     await new Promise((resolve) => setTimeout(resolve, 3000))
+    // throw new Error("エラーが発生")
     return articles
 }
 
@@ -16,7 +17,7 @@ export default async function BlogPage() {
         <div>
             <ul>
                 {articles.map((articles) => (
-                    <li key = {articles.id}>
+                    <li key={articles.id}>
                         title: {articles.title}
                     </li>
                 ))}
