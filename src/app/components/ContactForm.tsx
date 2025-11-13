@@ -1,12 +1,17 @@
 'use client'
 
 import { submitContactForm } from "@/lib/actions/contact"
+import { startTransition, useActionState } from "react"
 
 export default function ContactForm() {
+    const [state, formAction] = useActionState(submitContactForm, {
+        success: false,
+        errors: {}
+    })
     return (
         <div className="flex items-center justify-center px-4 py-10">
             <form
-                action={submitContactForm}
+                action={formAction}
                 className="w-full max-w-md rounded-xl border border-slate-200 bg-gradient-to-b from-sky-50 to-slate-50 shadow">
                 <div className="rounded-t-xl border-b border-slate-200 bg-sky-100/60 px-6 py-5">
                     <h2 className="text-lg font-semibold text-slate-800">お問い合わせ</h2>
@@ -26,6 +31,9 @@ export default function ContactForm() {
                             className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
                             placeholder="山田 太郎"
                         />
+                        {state.errors.name && (
+                            <p className="text-red-500 text-sm mt-1">{state.errors.name.join(',')}</p>
+                        )}
                     </div>
 
                     <div>
@@ -40,6 +48,9 @@ export default function ContactForm() {
                             className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
                             placeholder="example@mail.com"
                         />
+                        {state.errors.email && (
+                            <p className="text-red-500 text-sm mt-1">{state.errors.email.join(',')}</p>
+                        )}
                     </div>
 
                     <div className="pt-2">
