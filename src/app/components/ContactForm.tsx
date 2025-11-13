@@ -1,13 +1,39 @@
 'use client'
 
 import { submitContactForm } from "@/lib/actions/contact"
-import { startTransition, useActionState } from "react"
+import { ContactScheme } from "@/validations/contact"
+import { useActionState, useState } from "react"
+import { z } from 'zod'
 
 export default function ContactForm() {
+    const [clientErrors, setClientErrors] = useState({ name: "", email: "" })
     const [state, formAction] = useActionState(submitContactForm, {
         success: false,
         errors: {}
     })
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        const { name, value } = e.target
+        try {
+            if (name === 'name') {
+                ContactScheme.pick({ name: true }).parse({ name: value })
+            } else if (name === 'email') {
+                ContactScheme.pick({ email: true }).parse({ email: value })
+            }
+            setClientErrors(prev => ({
+                ...prev,
+                [name]: ''
+            }))
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                const errorMessage = error.errors[0]?.message || ''
+                setClientErrors(prev => ({
+                    ...prev,
+                    [name]: errorMessage
+                }))
+            }
+        }
+    }
+
     return (
         <div className="flex items-center justify-center px-4 py-10">
             <form
@@ -30,9 +56,13 @@ export default function ContactForm() {
                             required
                             className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
                             placeholder="山田 太郎"
+                            onBlur={handleBlur}
                         />
                         {state.errors.name && (
                             <p className="text-red-500 text-sm mt-1">{state.errors.name.join(',')}</p>
+                        )}
+                        {clientErrors.name && (
+                            <p className="text-red-500 text-sm mt-1">{clientErrors.name}</p>
                         )}
                     </div>
 
@@ -47,9 +77,13 @@ export default function ContactForm() {
                             required
                             className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
                             placeholder="example@mail.com"
+                            onBlur={handleBlur}
                         />
                         {state.errors.email && (
                             <p className="text-red-500 text-sm mt-1">{state.errors.email.join(',')}</p>
+                        )}
+                        {clientErrors.email && (
+                            <p className="text-red-500 text-sm mt-1">{clientErrors.email}</p>
                         )}
                     </div>
 
